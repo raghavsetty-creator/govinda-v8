@@ -152,7 +152,7 @@ resource "azurerm_automation_schedule" "start_schedule" {
   start_time              = "2026-03-04T08:25:00+05:30"
   description             = "Start GOVINDA VM at 08:25 AM IST Mon-Fri"
 
-  week_days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+  week_days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -169,7 +169,7 @@ resource "azurerm_automation_schedule" "stop_schedule" {
   start_time              = "2026-03-04T16:30:00+05:30"
   description             = "Stop GOVINDA VM at 04:30 PM IST Mon-Fri"
 
-  week_days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+  week_days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 }
 
 # ─────────────────────────────────────────────────────────────────────────────

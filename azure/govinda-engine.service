@@ -1,0 +1,20 @@
+[Unit]
+Description=GOVINDA NIFTY AI Trading Engine v8
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=govindaadmin
+WorkingDirectory=/opt/govinda/app
+Environment="GOVINDA_ENV=production"
+EnvironmentFile=/opt/govinda/.env
+ExecStartPre=/opt/govinda/scripts/load-secrets.sh
+ExecStart=/opt/govinda/venv/bin/python main.py
+Restart=on-failure
+RestartSec=30
+StandardOutput=append:/opt/govinda/logs/engine.log
+StandardError=append:/opt/govinda/logs/engine-error.log
+
+[Install]
+WantedBy=multi-user.target

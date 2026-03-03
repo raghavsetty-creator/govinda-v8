@@ -1,0 +1,18 @@
+[Unit]
+Description=GOVINDA Streamlit Dashboard
+After=network-online.target
+
+[Service]
+Type=simple
+User=govindaadmin
+WorkingDirectory=/opt/govinda/app
+Environment="GOVINDA_ENV=production"
+EnvironmentFile=/opt/govinda/.env
+ExecStart=/opt/govinda/venv/bin/streamlit run dashboard/app.py \
+          --server.port=8501 --server.address=0.0.0.0 \
+          --server.headless=true --browser.gatherUsageStats=false
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
