@@ -1,0 +1,35 @@
+# Secrets — NEVER commit these
+.env
+terraform.tfvars
+*.tfstate
+*.tfstate.backup
+.terraform/
+*.pem
+*.key
+*.pfx
+~/.ssh/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+
+# ML artifacts (large files — store in Azure Blob)
+saved_models/*.pkl
+saved_models/*.model
+mlruns/
+
+# Data
+data/*.csv
+data/*.parquet
+
+# Logs
+logs/*.log
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

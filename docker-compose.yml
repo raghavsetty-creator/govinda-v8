@@ -1,0 +1,33 @@
+# GOVINDA v8 — Local Docker Compose (for testing)
+version: '3.8'
+
+services:
+  engine:
+    build: .
+    container_name: govinda-engine
+    restart: unless-stopped
+    env_file: app/.env
+    volumes:
+      - govinda-data:/opt/govinda/data
+      - govinda-models:/opt/govinda/models
+      - govinda-logs:/opt/govinda/logs
+    command: python main.py
+
+  dashboard:
+    build: .
+    container_name: govinda-dashboard
+    restart: unless-stopped
+    env_file: app/.env
+    ports:
+      - "8501:8501"
+    volumes:
+      - govinda-data:/opt/govinda/data
+      - govinda-models:/opt/govinda/models
+      - govinda-logs:/opt/govinda/logs
+    command: streamlit run dashboard/app.py --server.port=8501 --server.address=0.0.0.0 --server.headless=true
+    depends_on: [engine]
+
+volumes:
+  govinda-data:
+  govinda-models:
+  govinda-logs:

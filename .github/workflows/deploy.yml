@@ -1,0 +1,56 @@
+# ═══════════════════════════════════════════════════════════════════
+# GOVINDA v8 — GitHub Actions CI/CD
+# Triggers: push to main → auto-deploy to Azure VM
+# Secrets needed in GitHub → Settings → Secrets:
+#   AZURE_VM_IP, AZURE_VM_SSH_KEY, AZURE_VM_USERNAME
+# ═══════════════════════════════════════════════════════════════════
+
+name: GOVINDA — Deploy to Azure
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Manual trigger button in GitHub UI
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+      - run: pip install -r app/requirements.txt pytest
+      - run: |
+          cd app
+          python -c "from utils.holiday_checker import should_system_run; print('✅ holiday_checker OK')"
+          python -c "from utils.lot_sizes import get_lot_size; assert get_lot_size('NIFTY')==65, 'Wrong lot size!'; print('✅ lot_sizes OK: NIFTY=65')"
+          python -c "import config; assert config.NIFTY_LOT_SIZE==65; print('✅ config OK')"
+
+  deploy:
+    name: Deploy to Azure VM
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AZURE_VM_SSH_KEY }}" > ~/.ssh/govinda_azure
+          chmod 600 ~/.ssh/govinda_azure
+
+      - name: Deploy application
+        run: bash azure/scripts/deploy.sh ${{ secrets.AZURE_VM_IP }} ~/.ssh/govinda_azure
+
+      - name: Notify success
+        if: success()
+        run: |
+          echo "✅ GOVINDA v8 deployed to ${{ secrets.AZURE_VM_IP }}"
+          echo "Dashboard: http://${{ secrets.AZURE_VM_IP }}:8501"
