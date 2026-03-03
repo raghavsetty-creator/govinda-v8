@@ -271,6 +271,18 @@ def parse_all_signals(lines):
     return list(reversed(signals))  # newest first
 
 all_signals = parse_all_signals(log_lines)
+
+# Load locked signal from JSON if available — prevents timestamp changing on refresh
+import json as _json, os as _os
+_json_path = "/opt/govinda/data/latest_signal.json"
+if _os.path.exists(_json_path):
+    try:
+        with open(_json_path) as _jf:
+            _locked = _json.load(_jf)
+        if _locked.get("locked") and all_signals:
+            all_signals[0]["timestamp"] = _locked["timestamp"]
+    except: pass
+
 sig = all_signals[0] if all_signals else {
     "timestamp":"—","mode":"OFFLINE","signal":"HOLD","conf":0.0,
     "agreement":"","options":"—","target":"—","sl":"—",
